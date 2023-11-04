@@ -15,7 +15,7 @@ import SwiftUI
 /// Tapping on an image will change it from an unfilled to a filled version of the image.
 ///
 /// The following example shows a Ratings view with a maximum rating of 3 red hearts
-///  bound to a heartRating property and a width of 50 specified
+///  bound to a heartRating property and a width of 50 specified.
 ///
 ///     RatingsView(
 ///              maxRating: 3,
@@ -89,7 +89,23 @@ struct RatingsView: View {
     }
 }
 
-#Preview("Example 1") {
+enum Symbol: String {
+    case bell
+    case bookmark
+    case diamond
+    case eye
+    case flag
+    case heart
+    case pencil
+    case person
+    case pin
+    case star
+    case thumbsUp = "hand.thumbsup"
+    case tag
+    case trash
+}
+
+#Preview("Symbol") {
     struct PreviewWapper: View {
         let maxRating = 5
         @State var currentRating = 2
@@ -98,7 +114,6 @@ struct RatingsView: View {
                 maxRating: maxRating,
                 currentRating: $currentRating
             )
-            
         }
     }
     return PreviewWapper()
@@ -106,12 +121,13 @@ struct RatingsView: View {
 
 
 extension RatingsView {
-    /// Only two required parameters are maxRating and the binding to currentRating.  All other parameters have default values
+    /// The three required parameters are maxRating and the binding to currentRating, and an enum case case
+    /// representing a selected sfSymbol.  All other parameters have default values
     /// - Parameters:
     ///   - maxRating: The maximum rating on the scale
     ///   - currentRating: A binding to the current rating variable
     ///   - width: The width of the image used for the rating  (Default - 20)
-    ///   - symbol: A selection of SFSymbols
+    ///   - symbolEnum: A selection of SFSymbols
     ///   - color: The color of the image ( (Default - .yellow)
     ///
     ///
@@ -132,19 +148,19 @@ extension RatingsView {
         symbolString = if let symbolEnum { symbolEnum.rawValue} else { symbol!}
     }
 }
-
-enum Symbol: String {
-    case bell
-    case bookmark
-    case diamond
-    case eye
-    case flag
-    case heart
-    case pencil
-    case person
-    case pin
-    case star
-    case thumbsUp = "hand.thumbsup"
-    case tag
-    case trash
+#Preview("SymbolEnum") {
+    struct PreviewWapper: View {
+        let maxRating = 3
+        @State var currentRating = 2
+        var body: some View {
+            RatingsView(
+                maxRating: maxRating,
+                currentRating: $currentRating,
+                width: 60,
+                symbolEnum: .heart,
+                color: .red
+            )
+        }
+    }
+    return PreviewWapper()
 }

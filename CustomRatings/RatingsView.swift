@@ -13,7 +13,8 @@ import SwiftUI
 
 /// A view of inline images that represents a rating.
 /// Tapping on an image will change it from an unfilled to a filled version of the image.
-///
+/// There are three initializers.  One  providing a string representing the name of an
+/// SFSymbol.  One providing  an enum case represetnting
 /// The following example shows a Ratings view with a maximum rating of 3 red hearts
 ///  bound to a heartRating property and a width of 50 specified.
 ///
@@ -31,6 +32,7 @@ struct RatingsView: View {
     let width: Int
     let symbol: String?
     let symbolEnum: Symbol?
+    let custom: String?
     let color: Color
     
     var symbolString: String
@@ -56,6 +58,7 @@ struct RatingsView: View {
         self.width = width
         self.symbol = symbol
         self.symbolEnum = nil
+        self.custom = nil
         self.color = color
         
         symbolString = if let symbolEnum { symbolEnum.rawValue} else { symbol!}
@@ -73,16 +76,31 @@ struct RatingsView: View {
                     }
                 }
             ForEach(0..<maxRating, id: \.self) { rating in
-                Image(systemName: symbolString)
-                    .resizable()
-                    .scaledToFit()
-                    .foregroundStyle(color)
-                    .symbolVariant(rating < currentRating ? .fill : .none)
-                    .onTapGesture {
-                        withAnimation {
-                            currentRating = rating + 1
+                Group {
+                    if let custom {
+                        if let img = UIImage(named: custom), let fill = UIImage(named: "\(custom).fill") {
+                            
+                            Image(uiImage: rating < currentRating ? fill : img)
+                                .resizable()
+                                .scaledToFit()
+                                .foregroundStyle(color)
+                        } else {
+                            Text("🚫")
                         }
+                            
+                    } else {
+                        Image(systemName: symbolString)
+                            .resizable()
+                            .scaledToFit()
+                            .foregroundStyle(color)
+                            .symbolVariant(rating < currentRating ? .fill : .none)
                     }
+                }
+                .onTapGesture {
+                    withAnimation {
+                        currentRating = rating + 1
+                    }
+                }
             }
         }
         .frame(width: CGFloat(maxRating * width))
@@ -143,6 +161,7 @@ extension RatingsView {
         self.width = width
         self.symbol = nil
         self.symbolEnum = symbolEnum
+        self.custom = nil
         self.color = color
         
         symbolString = if let symbolEnum { symbolEnum.rawValue} else { symbol!}
@@ -160,6 +179,56 @@ extension RatingsView {
                 symbolEnum: .heart,
                 color: .red
             )
+        }
+    }
+    return PreviewWapper()
+}
+
+extension RatingsView {
+    /// Must provide a maxRating, a bound current ratings and the name of a custom
+    /// image.  This image must be stored in the assets folder as a template image
+    /// and a single scalable image.  There must also be a  corresponding image
+    /// with a .fill extension in the name.
+    /// - Parameters:
+    ///   - maxRating: The maximum rating on the scale
+    ///   - currentRating: A binding to the current rating variable
+    ///   - width: The width of the image used for the rating  (Default - 20)
+    ///   - custom:The name of the unfilled template image in the assets folder
+    ///   - color: The color of the image ( (Default - .yellow)
+    ///
+    ///
+    init(
+        maxRating: Int,
+        currentRating: Binding<Int>,
+        width: Int = 30,
+        custom: String?,
+        color: Color = .yellow
+    ) {
+        self.maxRating = maxRating
+        self._currentRating = currentRating
+        self.width = width
+        self.symbol = nil
+        self.symbolEnum = nil
+        self.custom = custom
+        self.color = color
+        
+        symbolString = ""
+    }
+}
+
+#Preview("Custom") {
+    struct PreviewWapper: View {
+        let maxRating = 5
+        @State var currentRating = 2
+        var body: some View {
+            RatingsView(
+                maxRating: 5,
+                currentRating: $currentRating,
+                width: 50,
+                custom: "football",
+                color: .brown
+            )
+            
         }
     }
     return PreviewWapper()

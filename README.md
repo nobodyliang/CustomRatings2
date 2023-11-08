@@ -1,5 +1,6 @@
 # CustomRatings
 Custom SwiftUI RatingsView
+This has been updated
 
 This ReadMe was created for the project that I used for the SourceCode with Xcode series.
 
